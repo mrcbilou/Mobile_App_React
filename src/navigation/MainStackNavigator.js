@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 import Home from '../screens/Home'
 import Detail from '../screens/Detail'
+import Login from '../screens/Login'
 
 const Stack = createStackNavigator()
 
@@ -14,7 +15,7 @@ function MainStackNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator  
-       initialRouteName='Home'
+       initialRouteName='Login'
        screenOptions={{
          gestureEnabled: true,
        }}>
@@ -29,6 +30,11 @@ function MainStackNavigator() {
           options={({ route }) => ({
             title: route.params.item.name
           })}
+        />
+        <Stack.Screen
+          name='Login'
+          component={Login}
+          options={{ title: 'Login' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
