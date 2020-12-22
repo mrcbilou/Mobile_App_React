@@ -7,6 +7,7 @@ import {
   FlatList,
   TouchableOpacity,
   ImageBackground,
+  Button,
 } from "react-native";
 
 export default class Home extends Component {
@@ -42,6 +43,8 @@ export default class Home extends Component {
     };
     const image = require("../../assets/nicefade.jpg");
     return (
+      <>
+        
       <ImageBackground source={image} style={styles.image}>
         <View style={styles.item}>
           <TouchableOpacity
@@ -58,21 +61,30 @@ export default class Home extends Component {
           </TouchableOpacity>
         </View>
       </ImageBackground>
+      </>
     );
   };
-
+  
   render() {
     this.getElevatorInfo();
     let { container } = styles;
     let { dataSource, isLoading } = this.state;
     return (
-      <View style={container}>
-        <FlatList
-          data={dataSource}
-          renderItem={this._renderItem}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </View>
+      <>
+        <View style={container}>
+          <FlatList
+            data={dataSource}
+            renderItem={this._renderItem}
+            keyExtractor={(item, index) => index.toString()}
+          />
+          <Button
+          style ={styles.logoutButtonContainer}
+          onPress={() =>
+            this.props.navigation.navigate("Login")}
+          title="Logout"
+          />
+        </View>
+      </>
     );
   }
 }
@@ -82,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#ebebeb",
+    backgroundColor: "#eee",
   },
   image: {
     flex: 1,
@@ -105,6 +117,13 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 20,
   },
+  logoutButtonContainer: {
+    backgroundColor: "red",
+    borderRadius: 5,
+    padding: 5,
+    margin: 20,
+    color: "#eee"
+  }
 });
 
 // src/screens/Detail.js

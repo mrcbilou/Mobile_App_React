@@ -22,7 +22,7 @@ function MainStackNavigator() {
         <Stack.Screen
           name='Home'
           component={Home}
-          options={{ title: 'Home Screen' }}
+          options={{ title: 'Home Screen',  headerShown: false}}
         />
         <Stack.Screen
           name='Detail'
