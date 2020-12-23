@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -8,12 +8,12 @@ import {
 } from "react-native";
 import axios from "axios";
 
-function Detail(props) {
-  const { route } = props;
+function Detail({ navigation, route }) {
   const { item } = route.params;
+  const [status, setStatus] = useState(() => item.status)
+
   const {
     id,
-    status,
     serialNumber,
     elevatorModel,
     elevatorType,
@@ -24,70 +24,58 @@ function Detail(props) {
   const image = require("../../assets/wallpape.jpg");
 
   async function changeElevatorStatus() {
-    const url = `https://codeboxx-alexa.azurewebsites.net/api/Elevator/${id}`;
+    const url = `https://loicricorest.azurewebsites.net/api/Elevators/ChangeActive/${id}`;
 
     await axios
-      .put(url, {
-        elevator_status: "ACTIVE",
+      .get(url)
+      .then((res) => {
+        if (res.status == 200) {
+          setStatus((prev) => "Active");
+        }
       })
-      .then((res) => console.log(res.data))
       .catch((err) => console.log(err));
   }
 
-  if (status != "ACTIVE") {
-    return (
-      <ImageBackground source={image} style={styles.image}>
-        <Text style={styles.text}>Elevator Id : {id}</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardText}>Id: {id}</Text>
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Elevator Id : {id}</Text>
+      <View style={styles.card}>
+        <Text style={styles.cardText}>Id: {id}</Text>
+
+        {status === "Active" ? (
+          <Text style={styles.activeText}>Current Status: {status}</Text>
+        ) : (
           <Text style={styles.inactiveText}>Current Status: {status}</Text>
-          <Text style={styles.cardText}>Serial Number: {serialNumber}</Text>
-          <Text style={styles.cardText}>Model: {elevatorModel}</Text>
-          <Text style={styles.cardText}>Type: {elevatorType}</Text>
-          <Text style={styles.cardText}>
-            Inspection Certificate: {certificateOfInspection}
-          </Text>
-          <Text style={styles.cardText}>
-            Date of commissioning: {dateOfCommissioning}
-          </Text>
-          <Text style={styles.cardText}>
-            Last Inspection: {dateOfLastInspection}
-          </Text>
+        )}
+
+        <Text style={styles.cardText}>Serial Number: {serialNumber}</Text>
+        <Text style={styles.cardText}>Model: {elevatorModel}</Text>
+        <Text style={styles.cardText}>Type: {elevatorType}</Text>
+        <Text style={styles.cardText}>
+          Inspection Certificate: {certificateOfInspection}
+        </Text>
+        <Text style={styles.cardText}>
+          Date of commissioning: {dateOfCommissioning}
+        </Text>
+        <Text style={styles.cardText}>
+          Last Inspection: {dateOfLastInspection}
+        </Text>
+
+        {status === "Active" ? (
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.activeButtonContainer}>
+            <Text style={styles.text}> Return Home </Text>
+          </TouchableOpacity>
+        ) : (
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={changeElevatorStatus}
+            onPress={() => changeElevatorStatus()}
           >
             <Text style={styles.text}> Set Status to Active </Text>
           </TouchableOpacity>
-        </View>
-      </ImageBackground>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Elevator Id : {id}</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardText}>Id: {id}</Text>
-          <Text style={styles.activeText}>Current Status: {status}</Text>
-          <Text style={styles.cardText}>Serial Number: {serialNumber}</Text>
-          <Text style={styles.cardText}>Model: {elevatorModel}</Text>
-          <Text style={styles.cardText}>Type: {elevatorType}</Text>
-          <Text style={styles.cardText}>
-            Inspection Certificate: {certificateOfInspection}
-          </Text>
-          <Text style={styles.cardText}>
-            Date of commissioning: {dateOfCommissioning}
-          </Text>
-          <Text style={styles.cardText}>
-            Last Inspection: {dateOfLastInspection}
-          </Text>
-          <TouchableOpacity style={styles.activeButtonContainer}>
-            <Text style={styles.text}> Return Home </Text>
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -153,22 +141,3 @@ const styles = StyleSheet.create({
 });
 
 export default Detail;
-
-// const someData = {
-//     "elevator_status": "ACTIVE"
-// }
-
-// const putMethod = {
-//     method: 'PUT', // Method itself
-//     headers: {
-//     'Content-type': 'application/json; charset=UTF-8' // Indicates the content
-//     },
-//     body: JSON.stringify(someData) // We send data in JSON format
-// }
-
-// // make the HTTP put request using fetch api
-// fetch(url, putMethod)
-// //.then(res => console.log(res))
-// // .then(response => response.json())
-// // .then(data => console.log(data)) // Manipulate the data retrieved back, if we want to do something with it
-// .catch(err => console.log(err)) // Do something with the error

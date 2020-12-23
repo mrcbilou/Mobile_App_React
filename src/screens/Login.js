@@ -15,24 +15,23 @@ function Login(props) {
   const [value, onChangeText] = React.useState("Enter your Email");
 
   const emailValidation = () => {
-    fetch("https://codeboxx-alexa.azurewebsites.net/api/Employee")
+    // props.navigation.navigate("Home");
+
+    fetch(`https://loicricorest.azurewebsites.net/api/Employees/Email/${value}`)
       .then((response) => response.json())
-      // .then(response => console.log(response))
       .then((responseJson) => {
-        for (let i = 0; i < responseJson.length; i++) {
-          if (value === responseJson[i].email) {
-            props.navigation.navigate("Home");
-            return;
-          }
+        if (responseJson) {
+          props.navigation.navigate("Home");
+        } else {
+          Alert.alert("Your email is not valid!");
         }
-        Alert.alert("Your email is not valid!");
       });
   };
 
   
 
   return (
-    //<View style ={styles.container}>
+    
     <ImageBackground source={image} style={styles.image}>
       <Image style={styles.logo} source={require("../../assets/R2.png")} />
       <TextInput

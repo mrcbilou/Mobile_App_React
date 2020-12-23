@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
 
 import {
   StyleSheet,
@@ -10,27 +11,38 @@ import {
   Button,
 } from "react-native";
 
-export default class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+function Home(props) {
+  const isFocused = useIsFocused();
+  const [image, setImage] = useState(() => require("../../assets/nicefade.jpg"))
+  const [state, setState] = useState(() => {
+    return {
       isLoading: true,
       dataSource: [],
-    };
-  }
+    }
+  });
 
-  getElevatorInfo() {
-    fetch("https://codeboxx-alexa.azurewebsites.net/api/Elevator/Active")
+  useEffect(() => {
+    getElevatorInfo();
+  }, [])
+
+  useEffect(() => {
+    getElevatorInfo();
+  }, [isFocused])
+
+  function getElevatorInfo() {
+    fetch("https://loicricorest.azurewebsites.net/api/Elevators/inactiveList")
       .then((response) => response.json())
       .then((responseJson) => {
-        this.setState({
-          isLoading: false,
-          dataSource: responseJson,
+        setState(() => {
+          return {
+            isLoading: false,
+            dataSource: responseJson,
+          }
         });
       });
   }
 
-  _renderItem = ({ item, index }) => {
+  const renderItem = ({ item }) => {
     const info = {
       id: item.id,
       status: item.elevator_status,
@@ -41,53 +53,44 @@ export default class Home extends Component {
       dateOfCommissioning: item.date_of_commissioning,
       dateOfLastInspection: item.date_of_last_inspection,
     };
-    const image = require("../../assets/nicefade.jpg");
+
     return (
-      <>
-        
       <ImageBackground source={image} style={styles.image}>
         <View style={styles.item}>
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={() =>
-              this.props.navigation.navigate("Detail", { item: info })
+              props.navigation.navigate("Detail", { item: info })
             }
           >
             <Text style={styles.text}>
-              {" "}
-              Id:{item.id}, Status:{item.elevator_status}, Serial Number :
-              {item.serial_number}{" "}
+              Id: {item.id}, Status: {item.elevator_status}, Serial Number: {item.serial_number}
             </Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
-      </>
     );
   };
   
-  render() {
-    this.getElevatorInfo();
-    let { container } = styles;
-    let { dataSource, isLoading } = this.state;
-    return (
-      <>
-        <View style={container}>
-          <FlatList
-            data={dataSource}
-            renderItem={this._renderItem}
-            keyExtractor={(item, index) => index.toString()}
-          />
-          <Button
-          style ={styles.logoutButtonContainer}
-          onPress={() =>
-            this.props.navigation.navigate("Login")}
-          title="Logout"
-          />
-        </View>
-      </>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      {/* const dataSource = {(item, index)} */}
+      <FlatList
+        data={state.dataSource}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+      <Button
+        style ={styles.logoutButtonContainer}
+        onPress={() =>
+        props.navigation.popToTop()}
+        title="Logout"
+      />
+    </View>
+  );
 }
+
+export default Home;
 
 const styles = StyleSheet.create({
   container: {
